@@ -11,6 +11,8 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
     Product findOneById(String name);
     List<Product> findAllByPriceGreaterThan(int price);
-
+    List<Product> findAllByPriceIsGreaterThanEqual(int minPrice);
+    List<Product> findAllByPriceIsLessThanEqual(int maxPrice);
+    List<Product> findAllByPriceGreaterThanEqualAndPriceIsLessThanEqual(int minPrice, int maxPrice);
 }
 

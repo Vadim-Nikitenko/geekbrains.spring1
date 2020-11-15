@@ -48,6 +48,23 @@ public class ProductsController {
         return "all_products";
     }
 
+//    @GetMapping
+//    public String showAllProducts(Model model,
+//                          @RequestParam(name = "min_price", required = false) Integer minPrice,
+//                          @RequestParam(name = "max_price", required = false) Integer maxPrice) {
+//        List<Product> products;
+//        if (minPrice != null && maxPrice != null) {
+//            products = productsService.findAllByPriceGreaterThanEqualAndPriceIsLessThanEqual(minPrice, maxPrice);
+//        } else if (minPrice != null) {
+//            products = productsService.findAllByPriceIsGreaterThanEqual(minPrice);
+//        } else  if (maxPrice != null) {
+//            products = productsService.findAllByPriceIsLessThanEqual(maxPrice);
+//        } else {
+//            products = productsService.findAll();
+//        }
+//        model.addAttribute("products", products);
+//        return "all_products";
+//    }
 
 
     @GetMapping("/add")
