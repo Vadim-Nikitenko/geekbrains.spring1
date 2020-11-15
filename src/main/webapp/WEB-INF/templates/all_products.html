@@ -21,8 +21,8 @@
     <!--        /*@thymesVar id="products" type="java.util.List<com.geekbrains.spring.mvc.model.Product>"*/-->
     <tr th:each="p : ${products}">
         <td th:text="${p.id}"></td>
-        <td th:text="${p.title}"></td>
-        <td th:text="${p.cost}"></td>
+        <td th:text="${p.name}"></td>
+        <td th:text="${p.price}"></td>
         <td><a th:href="@{'/products/edit/' + ${p.id}}">Редактировать</a></td>
         <td><a th:href="@{'/products/remove/' + ${p.id}}">Удалить</a></td>
     </tr>
