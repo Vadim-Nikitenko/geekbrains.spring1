@@ -1,9 +1,10 @@
 package com.geekbrains.spring.mvc.controllers;
 
 import com.geekbrains.spring.mvc.model.Product;
-import com.geekbrains.spring.mvc.services.product.IProductsService;
+import com.geekbrains.spring.mvc.repositories.specifications.ProductSpecifications;
+import com.geekbrains.spring.mvc.services.product.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,19 +15,57 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductsController {
 
-    private final IProductsService productsService;
+    private ProductsService productsService;
 
     @Autowired
-    public ProductsController(@Qualifier(value = "productsServiceImpl") IProductsService productsService) {
+    public ProductsController(ProductsService productsService) {
         this.productsService = productsService;
     }
 
     @GetMapping
-    public String showAllProducts(Model model) {
-        List<Product> products = productsService.findAll();
+    public String showAllProducts(Model model,
+                                  @RequestParam(name = "p", defaultValue = "1") Integer pageNumber,
+                                  @RequestParam(name = "min_price", required = false) Integer minPrice,
+                                  @RequestParam(name = "max_price", required = false) Integer maxPrice,
+                                  @RequestParam(name = "sort", required = false) Integer sort) {
+        Specification<Product> spec = Specification.where(null);
+        if (minPrice != null) {
+            spec = spec.and(ProductSpecifications.priceGEThan(minPrice));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(ProductSpecifications.priceLEThan(maxPrice));
+        }
+        if (sort != null) {
+            if (sort == 1) {
+                spec = spec.and(ProductSpecifications.asc());
+            } else if (sort == 2) {
+                spec = spec.and(ProductSpecifications.desc());
+            }
+        }
+
+        List<Product> products = productsService.findAll(spec, pageNumber).getContent();
         model.addAttribute("products", products);
         return "all_products";
     }
+
+//    @GetMapping
+//    public String showAllProducts(Model model,
+//                          @RequestParam(name = "min_price", required = false) Integer minPrice,
+//                          @RequestParam(name = "max_price", required = false) Integer maxPrice) {
+//        List<Product> products;
+//        if (minPrice != null && maxPrice != null) {
+//            products = productsService.findAllByPriceGreaterThanEqualAndPriceIsLessThanEqual(minPrice, maxPrice);
+//        } else if (minPrice != null) {
+//            products = productsService.findAllByPriceIsGreaterThanEqual(minPrice);
+//        } else  if (maxPrice != null) {
+//            products = productsService.findAllByPriceIsLessThanEqual(maxPrice);
+//        } else {
+//            products = productsService.findAll();
+//        }
+//        model.addAttribute("products", products);
+//        return "all_products";
+//    }
+
 
     @GetMapping("/add")
     public String showAddForm() {
@@ -35,7 +74,7 @@ public class ProductsController {
 
     @PostMapping("/add")
     public String saveNewProduct(@ModelAttribute Product newProduct) {
-        productsService.saveOrUpdateProduct(newProduct);
+        productsService.save(newProduct);
         return "redirect:/products/";
     }
 
@@ -47,13 +86,13 @@ public class ProductsController {
 
     @PostMapping("/edit")
     public String modifyProduct(@ModelAttribute Product modifiedProduct) {
-        productsService.saveOrUpdateProduct(modifiedProduct);
+        productsService.save(modifiedProduct);
         return "redirect:/products/";
     }
 
     @GetMapping("/remove/{id}")
     public String removeProduct(@PathVariable Long id) {
-        productsService.removeProduct(id);
+        productsService.deleteById(id);
         return "redirect:/products/";
     }
 

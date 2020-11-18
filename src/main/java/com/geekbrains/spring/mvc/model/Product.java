@@ -1,17 +1,29 @@
 package com.geekbrains.spring.mvc.model;
 
+import org.springframework.data.domain.Sort;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Product {
-    private Long id;
-    private String title;
-    private int cost;
+@Entity
+@Table(name = "products")
+public class Product implements Serializable {
 
-    public Product(Long id, String title, int cost) {
-        this.id = id;
-        this.title = title;
-        this.cost = cost;
-    }
+    @Transient
+    public static final Sort SORT_BY_PRICE_DESC =
+            Sort.by(Sort.Direction.DESC, "price");
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "price")
+    private int price;
 
     public Long getId() {
         return id;
@@ -21,20 +33,20 @@ public class Product {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getCost() {
-        return cost;
+    public int getPrice() {
+        return price;
     }
 
-    public void setCost(int cost) {
-        this.cost = cost;
+    public void setPrice(int price) {
+        this.price = price;
     }
 
     @Override
@@ -54,8 +66,8 @@ public class Product {
     public String toString() {
         return "Product{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
-                ", cost=" + cost +
+                ", name='" + name + '\'' +
+                ", price=" + price +
                 '}';
     }
 }
